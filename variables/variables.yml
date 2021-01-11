@@ -1,0 +1,7 @@
+documentroot: /var/www/webcontent/
+portnumber: 8001
+config_file_location: /ansible/webserver/web.conf
+content_src: /var/www/html/
+content_dest: /var/www/webcontent
+authfile_location: /etc/httpd/.htpasswd
+authname: Authentication

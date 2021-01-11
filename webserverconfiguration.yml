@@ -1,0 +1,75 @@
+- hosts: web_server_node
+  vars_files: 
+           - variables/variables.yml
+           - variables/password.yml
+  tasks:
+
+          - name: "Install the apache web server"
+            package:
+                    name : "httpd"
+                    state: present
+
+          - name: "Change the configuration file of apache webserver that will change the default port number and document root"
+            template:
+                    src: "{{ config_file_location }}"
+                    dest: /etc/httpd/conf.d/
+            notify:
+                    - "restart apache"        
+
+
+          - name: "Copy the web server files in document root  folders"
+            copy:
+                    src: "{{ content_src }}"
+                    dest: "{{ content_dest }}"
+
+
+          - name: "Install python"
+            package:
+                    name: "python3"
+                    state: present
+
+          - name: "Install passlib using pip"
+            pip:
+                    name: passlib
+
+
+          - name: "Create password for authentication"
+            htpasswd:
+                    path: "/etc/httpd/.htpasswd"
+                    name: "{{ username }}"
+                    password: "{{ password }}"
+
+         
+          - name: "Ensure apache is running"
+            service:
+                    name: httpd
+                    state: started
+
+          - name: "Configure firewall for the port"
+            firewalld:
+                    port: "{{ portnumber }}/tcp"
+                    state: enabled
+
+  handlers:
+          - name: "restart apache"
+            service:
+                    name: httpd
+                    state: restarted
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
